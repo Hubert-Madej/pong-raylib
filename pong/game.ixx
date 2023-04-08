@@ -14,7 +14,6 @@ export struct Game
 		InitWindow(GameConstants::GAME_WINDOW_WIDTH, GameConstants::GAME_WINDOW_HEIGHT, GameConstants::GAME_WINDOW_TITLE.c_str());
 		SetWindowState(FLAG_VSYNC_HINT);
 
-		IfileHandler* x = new fileHandlerTxt();
 
 		Ball ball(
 			GameConstants::BALL_X_POS,
@@ -71,27 +70,27 @@ export struct Game
 					leftPaddle.yPos += leftPaddle.speed * GetFrameTime();
 				}
 
-				if (IsKeyDown(KEY_UP) && rightPaddle.yPos - rightPaddle.height / 2 > 0) {
-					rightPaddle.yPos -= rightPaddle.speed * GetFrameTime();
+				if ((ball.yPos < rightPaddle.yPos) && rightPaddle.yPos - rightPaddle.height / 2 > 0) {
+					rightPaddle.yPos -= ((rightPaddle.speed * 0.75) * GetFrameTime());
 				}
 
-				if (IsKeyDown(KEY_DOWN) && rightPaddle.yPos < GetScreenHeight()) {
-					rightPaddle.yPos += rightPaddle.speed * GetFrameTime();
+				if ((ball.yPos > rightPaddle.yPos) && rightPaddle.yPos < GetScreenHeight()) {
+					rightPaddle.yPos += ((rightPaddle.speed * 0.75) * GetFrameTime());
 				}
 			}
 
 			//Detect ball colision with paddles & block infinite hits
 			if (CheckCollisionCircleRec(Vector2{ ball.xPos, ball.yPos }, ball.radius, leftPaddle.GetRect())) {
 				if (ball.speedX < 0) {
-					ball.speedX *= -1.25f;
-					ball.speedY = (ball.yPos - leftPaddle.yPos) / (leftPaddle.height / 2) * ball.speedX;
+					ball.speedX *= -1.1f;
+					ball.speedY = (ball.yPos - leftPaddle.yPos + 50) / (leftPaddle.height / 2) * ball.speedX;
 				}
 			}
 
 			if (CheckCollisionCircleRec(Vector2{ ball.xPos, ball.yPos }, ball.radius, rightPaddle.GetRect())) {
 				if (ball.speedX > 0) {
-					ball.speedX *= -1.25f;
-					ball.speedY = (ball.yPos - rightPaddle.yPos) / (rightPaddle.height / 2) * ball.speedX * -1;
+					ball.speedX *= -1.1f;
+					ball.speedY = (ball.yPos - rightPaddle.yPos + 50) / (rightPaddle.height / 2) * ball.speedX * -1;
 				}
 			}
 
@@ -106,9 +105,7 @@ export struct Game
 			if (winnerText && IsKeyPressed(KEY_SPACE)) {
 				if (winnerText == GameConstants::WINNER_TEXT_RIGHT_PLAYER.c_str()) rightPlayerScore++;
 
-				if (winnerText == GameConstants::WINNER_TEXT_LEFT_PLAYER.c_str()) leftPlayerScore++;;
-
-				x->saveToFile(1, 2);
+				if (winnerText == GameConstants::WINNER_TEXT_LEFT_PLAYER.c_str()) leftPlayerScore++;
 
 				ball.xPos = GameConstants::BALL_X_POS;
 				ball.yPos = GameConstants::BALL_Y_POS;
@@ -141,6 +138,9 @@ export struct Game
 			DrawFPS(10, 10);
 			EndDrawing();
 		}
+		IfileHandler* x = new fileHandlerTxt();
+
+		x->saveToFile(leftPlayerScore, rightPlayerScore);
 
 		delete x;
 		CloseWindow();
