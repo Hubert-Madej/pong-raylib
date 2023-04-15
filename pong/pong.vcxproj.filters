@@ -36,5 +36,11 @@
     <ClCompile Include="fileHandlerTxt.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gameManager.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamesHistory.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

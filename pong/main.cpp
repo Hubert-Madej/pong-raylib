@@ -1,6 +1,7 @@
 import game;
+import gameManager;
 
 int main() {
-	Game g;
-	g.start();
+	GameManager gm;
+	gm.start();
 }

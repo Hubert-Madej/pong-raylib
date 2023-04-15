@@ -11,9 +11,8 @@ import fileHandlerTxt;
 export struct Game
 {
 	int start() {
-		InitWindow(GameConstants::GAME_WINDOW_WIDTH, GameConstants::GAME_WINDOW_HEIGHT, GameConstants::GAME_WINDOW_TITLE.c_str());
-		SetWindowState(FLAG_VSYNC_HINT);
 
+		bool backToMenu = false;
 
 		Ball ball(
 			GameConstants::BALL_X_POS,
@@ -83,14 +82,14 @@ export struct Game
 			if (CheckCollisionCircleRec(Vector2{ ball.xPos, ball.yPos }, ball.radius, leftPaddle.GetRect())) {
 				if (ball.speedX < 0) {
 					ball.speedX *= -1.1f;
-					ball.speedY = (ball.yPos - leftPaddle.yPos + 50) / (leftPaddle.height / 2) * ball.speedX;
+					ball.speedY = (ball.yPos - leftPaddle.yPos) / (leftPaddle.height / 2) * ball.speedX;
 				}
 			}
 
 			if (CheckCollisionCircleRec(Vector2{ ball.xPos, ball.yPos }, ball.radius, rightPaddle.GetRect())) {
 				if (ball.speedX > 0) {
 					ball.speedX *= -1.1f;
-					ball.speedY = (ball.yPos - rightPaddle.yPos + 50) / (rightPaddle.height / 2) * ball.speedX * -1;
+					ball.speedY = (ball.yPos - rightPaddle.yPos) / (rightPaddle.height / 2) * -ball.speedX;
 				}
 			}
 
@@ -116,6 +115,11 @@ export struct Game
 				
 				winnerText = nullptr;
 
+			}
+
+			if (IsKeyPressed(KEY_ESCAPE))
+			{
+				return 0;
 			}
 
 			BeginDrawing();

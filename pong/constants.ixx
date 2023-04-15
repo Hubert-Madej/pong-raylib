@@ -15,7 +15,7 @@ export struct GameConstants
 	inline static const float BALL_X_POS = GAME_WINDOW_WIDTH / 2.0f;
 	inline static const float BALL_Y_POS = GAME_WINDOW_HEIGHT / 2.0f;
 	inline static const int BALL_RADIUS = 10;
-	inline static const float BALL_SPEED_X = 250;
+	inline static const float BALL_SPEED_X = 400;
 	inline static const float BALL_SPEED_Y = 400;
 
 	inline static const float LEFT_PADDLE_X_POS = 50.0f;
