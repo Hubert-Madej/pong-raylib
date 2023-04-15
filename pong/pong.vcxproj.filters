@@ -42,5 +42,8 @@
     <ClCompile Include="gamesHistory.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gameInput.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@ export struct fileHandlerTxt : IfileHandler {
 	std::string fileName = "score.txt";
 
 
-	void saveToFile(int leftPlayerScore, int rightPlayerScore) {
+	void saveToFile(int leftPlayerScore, int rightPlayerScore, std::string username) {
 		std::filesystem::path filePath(fileName);
 
 		std::ofstream file(filePath, std::ios::app);
@@ -19,12 +19,12 @@ export struct fileHandlerTxt : IfileHandler {
 			std::cerr << "Could not open the file" << std::endl;
 			return;
 		}
-		file << leftPlayerScore << "." << rightPlayerScore << "\n";
+		file << leftPlayerScore << ";" << rightPlayerScore << ";" << username << "\n";
 		file.close();
 	}
 
-	std::vector<std::pair<int, int>> readFromFile() {
-		std::vector<std::pair<int, int>> result;
+	std::vector<std::tuple<int, int, std::string>> readFromFile() {
+		std::vector<std::tuple<int, int, std::string>> result;
 
 		std::filesystem::path filePath(fileName);
 		if (!std::filesystem::exists(filePath)) {
@@ -39,14 +39,32 @@ export struct fileHandlerTxt : IfileHandler {
 		}
 		std::string line;
 		while (file >> line) {
-			std::pair<int, int> p;
-			p.first = std::stoi(line.substr(0, line.find(".")));
-			p.second = std::stoi(line.substr(line.find(".")));
-			result.push_back(p);
+			std::tuple<int, int, std::string> t = splitString(line);
+
+			result.push_back(t);
 		}
 
 		file.close();
 		return result;
 
+	}
+
+	std::tuple<int, int, std::string> splitString(const std::string& input) {
+		int firstInt = 0, secondInt = 0;
+		std::string str;
+
+		// find the first and second semicolons in the input string
+		size_t firstSemicolon = input.find(';');
+		size_t secondSemicolon = input.find(';', firstSemicolon + 1);
+
+		// extract the first and second integers from the string
+		firstInt = std::stoi(input.substr(0, firstSemicolon));
+		secondInt = std::stoi(input.substr(firstSemicolon + 1, secondSemicolon - firstSemicolon - 1));
+
+		// extract the string after the second semicolon
+		str = input.substr(secondSemicolon + 1);
+
+		// create and return the tuple
+		return std::make_tuple(firstInt, secondInt, str);
 	}
 };

@@ -5,14 +5,15 @@ export module game;
 import constants;
 import ball;
 import paddle;
-import IfileHandler;
-import fileHandlerTxt;
 
 export struct Game
 {
-	int start() {
+	std::pair<int, int> start() {
 
 		bool backToMenu = false;
+		bool isRoundEnded = true;
+		Sound hitSound = LoadSound("resources/ball-hit.wav");
+		Sound goalSound = LoadSound("resources/goal.wav");
 
 		Ball ball(
 			GameConstants::BALL_X_POS,
@@ -52,11 +53,13 @@ export struct Game
 			if (ball.yPos < 0) {
 				ball.yPos = 0;
 				ball.speedY *= -1;
+				PlaySound(hitSound);
 			}
 
 			if (ball.yPos > GetScreenHeight()) {
 				ball.yPos = GetScreenHeight();
 				ball.speedY *= -1;
+				PlaySound(hitSound);
 			}
 
 			//Move paddles
@@ -81,6 +84,7 @@ export struct Game
 			//Detect ball colision with paddles & block infinite hits
 			if (CheckCollisionCircleRec(Vector2{ ball.xPos, ball.yPos }, ball.radius, leftPaddle.GetRect())) {
 				if (ball.speedX < 0) {
+					PlaySound(hitSound);
 					ball.speedX *= -1.1f;
 					ball.speedY = (ball.yPos - leftPaddle.yPos) / (leftPaddle.height / 2) * ball.speedX;
 				}
@@ -88,16 +92,25 @@ export struct Game
 
 			if (CheckCollisionCircleRec(Vector2{ ball.xPos, ball.yPos }, ball.radius, rightPaddle.GetRect())) {
 				if (ball.speedX > 0) {
+					PlaySound(hitSound);
 					ball.speedX *= -1.1f;
 					ball.speedY = (ball.yPos - rightPaddle.yPos) / (rightPaddle.height / 2) * -ball.speedX;
 				}
 			}
 
 			if (ball.xPos < 0) {
+				if (isRoundEnded) {
+					PlaySound(goalSound);
+					isRoundEnded = false;
+				}
 				winnerText = GameConstants::WINNER_TEXT_RIGHT_PLAYER.c_str();
 			}
 
 			if (ball.xPos > GetScreenWidth()) {
+				if (isRoundEnded) {
+					PlaySound(goalSound);
+					isRoundEnded = false;
+				}
 				winnerText = GameConstants::WINNER_TEXT_LEFT_PLAYER.c_str();
 			}
 
@@ -113,13 +126,14 @@ export struct Game
 				rightPaddle.yPos = GameConstants::PADDLE_Y_POS;
 				leftPaddle.yPos = GameConstants::PADDLE_Y_POS;
 				
+				isRoundEnded = true;
 				winnerText = nullptr;
 
 			}
 
 			if (IsKeyPressed(KEY_ESCAPE))
 			{
-				return 0;
+				return std::pair<int, int>(leftPlayerScore, rightPlayerScore);
 			}
 
 			BeginDrawing();
@@ -142,13 +156,9 @@ export struct Game
 			DrawFPS(10, 10);
 			EndDrawing();
 		}
-		IfileHandler* x = new fileHandlerTxt();
-
-		x->saveToFile(leftPlayerScore, rightPlayerScore);
-
-		delete x;
+		
+		UnloadSound(hitSound);
 		CloseWindow();
-
-		return 0;
+		return std::pair<int, int>(leftPlayerScore, rightPlayerScore);
 	}
 };

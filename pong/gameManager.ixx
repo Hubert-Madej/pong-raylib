@@ -1,8 +1,13 @@
 module;
 #include "raylib.h"
+#include <string>
+#include <iostream>
 export module gameManager;
 import constants;
 import game;
+import IfileHandler;
+import fileHandlerTxt;
+import gameInput;
 
 export struct GameManager
 {
@@ -10,6 +15,7 @@ export struct GameManager
 
         // Initialize the window
         InitWindow(GameConstants::GAME_WINDOW_WIDTH, GameConstants::GAME_WINDOW_HEIGHT, GameConstants::GAME_WINDOW_TITLE.c_str());
+        InitAudioDevice();
         SetWindowState(FLAG_VSYNC_HINT);
         SetExitKey(0);
 
@@ -71,7 +77,23 @@ export struct GameManager
             {
                 // Call the PlayGame function to start the game
                 Game g;
-                g.start();
+                std::pair<int, int> score = g.start();
+                
+
+                if (score.first > 0 || score.second > 0) {
+
+                    std::string username;
+                    GameInput gi;
+                    username = gi.displayInput(username);
+
+                    if (username.length() > 0) {
+                        IfileHandler* x = new fileHandlerTxt();
+
+                        x->saveToFile(score.first, score.second, username);
+
+                        delete x;
+                    }
+               }
 
                 // Reset the button state variables
                 playPressed = false;
@@ -90,8 +112,7 @@ export struct GameManager
             }
         }
 
-        // Close the window
-        CloseWindow();
+        CloseAudioDevice();
 
         return 0;
     }

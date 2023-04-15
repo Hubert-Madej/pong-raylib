@@ -133,6 +133,7 @@
     <ClCompile Include="constants.ixx" />
     <ClCompile Include="fileHandlerTxt.ixx" />
     <ClCompile Include="game.ixx" />
+    <ClCompile Include="gameInput.ixx" />
     <ClCompile Include="gameManager.ixx" />
     <ClCompile Include="gamesHistory.ixx" />
     <ClCompile Include="IfileHandler.ixx" />
